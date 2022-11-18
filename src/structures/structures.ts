@@ -1,4 +1,4 @@
 export   interface categoryInterface {
     name: string;
-    images_array:[]
+    images_array:string[]
 }

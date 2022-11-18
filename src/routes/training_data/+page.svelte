@@ -2,31 +2,39 @@
     import Axios from '../../axios'
     var showCreateNewLabel:Boolean=false
     var newCategoryName:String="";
+    export let data;
     import type {categoryInterface} from '../../structures/structures'
 
     var categories:categoryInterface[]=[]
     function showDiv() {
         showCreateNewLabel=!showCreateNewLabel;
     }
-
+    function get_categories(){
+        Axios.get('/get_categorues').then(response=>{
+        categories=response.data
+        console.log(response)}).catch(err=>console.log(err)); 
+    }
     function add_category(){
-        const options = {
-            headers: {'Access-Control-Allow-Origin': "*"}
-        };
         const params={category_name:newCategoryName}
         Axios.post('/add_category',params).then(response=>{
-            categories=response.data
+
+            categories=data.categories
+            categories.push(response.data)
             console.log(response)}).catch(err=>console.log(err)); 
-        
         showDiv()  
+
     }
+ 
     import Category from '../../componenents/category.svelte'
 </script>
+<head>
+    <title>Training Data</title>
+</head>
 <div>
 
     <h1 class="text-4xl mt-12 bg-[#e4ebe5] py-16 text-black text-center">Reconnaissance <span class="text-[50px] font-bold text-[#630a8a]">images</span></h1>
     <div class="mt-1 flex flex-col justify-between w-[100%] px-2">
-        <a href="/" class="text-[#6495f5] mt-1">&lt; Revenir au projet</a>
+        <a data-sveltekit-noscroll href="/" class="text-[#6495f5] mt-1">&lt; Revenir au projet</a>
         <div class="mt-2 flex flex-row justify-between w-full pl-2 pr-12">
             <div class="h-28 w-[88%] rounded-md bg-sky-100 p-4">
                 <p class="w-full text-center text-lime-700 text-lg">Cliquez sur le bouton 'plus' à droite pour ajouter votre premier dossier d'entraînement. </p>
@@ -54,11 +62,15 @@
     </div>
     {/if}
     <div class="flex flex-row flex-wrap gap-16 w-full mt-16 px-7" id="categories">
-        {#each categories as item}
-        <Category category={item} />
-        
+        {#if categories.length==0}
+        {#each data.categories as item}
+        <Category category={item}  />
         {/each}
-        
+        {:else}
+            {#each categories as item}
+                <Category category={item}  />
+            {/each}
+        {/if}
     </div>
 
     </div>
